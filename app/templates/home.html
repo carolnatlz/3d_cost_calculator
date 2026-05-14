@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f4efe6" />
+  <meta name="description" content="PWA minimalista para calcular custo de filamento e energia na impressao 3D." />
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}" />
+  <link rel="icon" href="{{ url_for('static', filename='icons/icon-192.svg') }}" type="image/svg+xml" />
+  <title>Calculadora 3D</title>
+
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --surface: rgba(255, 252, 246, 0.84);
+      --surface-strong: #fffdf8;
+      --ink: #1e1b18;
+      --muted: #6e655c;
+      --line: rgba(64, 52, 42, 0.12);
+      --accent: #d97706;
+      --accent-soft: #f3c98b;
+      --energy: #2f6f62;
+      --shadow: 0 28px 90px rgba(68, 46, 19, 0.16);
+      --radius-xl: 32px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --transition: 220ms ease;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(232, 176, 88, 0.28), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(69, 131, 117, 0.18), transparent 32%),
+        linear-gradient(160deg, #f6f1e8 0%, #efe8dc 100%);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      z-index: 0;
+      border-radius: 999px;
+      filter: blur(10px);
+      pointer-events: none;
+    }
+
+    body::before {
+      width: 260px;
+      height: 260px;
+      top: -90px;
+      right: -70px;
+      background: rgba(217, 119, 6, 0.18);
+    }
+
+    body::after {
+      width: 220px;
+      height: 220px;
+      bottom: -70px;
+      left: -60px;
+      background: rgba(47, 111, 98, 0.16);
+    }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 960px);
+      background: var(--surface);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .shell::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--accent) 0%, #f4d399 45%, var(--energy) 100%);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      min-height: 640px;
+    }
+
+    .hero,
+    .calculator {
+      padding: 36px;
+    }
+
+    .hero {
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.08)),
+        linear-gradient(150deg, rgba(255, 231, 196, 0.75), rgba(255, 255, 255, 0));
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 28px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: rgba(255, 253, 248, 0.85);
+      border: 1px solid rgba(217, 119, 6, 0.16);
+      color: var(--muted);
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 6px rgba(217, 119, 6, 0.12);
+    }
+
+    h1 {
+      margin: 18px 0 14px;
+      font-size: clamp(2.3rem, 4vw, 4rem);
+      line-height: 0.96;
+      letter-spacing: -0.05em;
+    }
+
+    .lead {
+      margin: 0;
+      max-width: 30ch;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .insights {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .insight {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      background: rgba(255, 253, 249, 0.72);
+      border: 1px solid rgba(64, 52, 42, 0.08);
+      transform: translateY(18px);
+      opacity: 0;
+      animation: rise 700ms var(--transition) forwards;
+    }
+
+    .insight:nth-child(2) {
+      animation-delay: 120ms;
+    }
+
+    .insight strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1.1rem;
+    }
+
+    .insight span {
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.5;
+    }
+
+    .calculator {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 24px;
+      background: rgba(255, 255, 255, 0.28);
+    }
+
+    .panel-head h2 {
+      margin: 0 0 8px;
+      font-size: 1.5rem;
+    }
+
+    .panel-head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    form {
+      display: grid;
+      gap: 18px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 0.94rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .prefix {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(30, 27, 24, 0.42);
+      font-size: 0.96rem;
+      pointer-events: none;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      background: var(--surface-strong);
+      color: var(--ink);
+      padding: 18px 18px 18px 48px;
+      font-size: 1rem;
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+
+    input:focus {
+      outline: none;
+      border-color: rgba(217, 119, 6, 0.42);
+      box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .hint {
+      margin: -2px 0 0;
+      color: rgba(110, 101, 92, 0.92);
+      font-size: 0.85rem;
+    }
+
+    .summary {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      border-radius: 24px;
+      background: rgba(255, 252, 246, 0.82);
+      border: 1px solid rgba(64, 52, 42, 0.08);
+    }
+
+    .result {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(64, 52, 42, 0.08);
+    }
+
+    .result:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .result:first-child {
+      padding-top: 0;
+    }
+
+    .result-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+    }
+
+    .chip {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
+
+    .chip.filament {
+      background: var(--accent);
+      box-shadow: 0 0 0 7px rgba(217, 119, 6, 0.12);
+    }
+
+    .chip.energy {
+      background: var(--energy);
+      box-shadow: 0 0 0 7px rgba(47, 111, 98, 0.12);
+    }
+
+    .result strong,
+    .total strong {
+      font-size: 1.02rem;
+      letter-spacing: -0.02em;
+    }
+
+    .total {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 6px;
+      padding: 18px 20px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #fff0d8, #fffaf1 55%, #edf7f4);
+      border: 1px solid rgba(64, 52, 42, 0.08);
+    }
+
+    .total span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.86rem;
+      margin-top: 3px;
+    }
+
+    .total strong {
+      font-size: clamp(1.55rem, 3vw, 2rem);
+    }
+
+    @keyframes rise {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 860px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+    }
+
+    @media (max-width: 580px) {
+      body {
+        padding: 14px;
+      }
+
+      .hero,
+      .calculator {
+        padding: 24px;
+      }
+
+      .insights {
+        grid-template-columns: 1fr;
+      }
+
+      .summary,
+      .total {
+        border-radius: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="shell">
+    <section class="layout">
+      <article class="hero">
+        <div>
+          <span class="eyebrow">PWA de custo de impressao 3D</span>
+          <h1>Veja o custo antes da maquina aquecer.</h1>
+          <p class="lead">
+            Informe quantos metros de filamento a peca usa e quantas horas a impressao leva.
+            A tela calcula na hora o gasto de material, energia e o total.
+          </p>
+        </div>
+
+        <div class="insights">
+          <div class="insight">
+            <strong>Filamento</strong>
+            <span>Calculo baseado no custo por metro configurado na propria pagina.</span>
+          </div>
+          <div class="insight">
+            <strong>Energia</strong>
+            <span>Horas de impressao convertidas em custo para facilitar a precificacao.</span>
+          </div>
+        </div>
+      </article>
+
+      <section class="calculator" aria-label="Calculadora de custo">
+        <header class="panel-head">
+          <h2>Simular impressao</h2>
+          <p>Os resultados aparecem automaticamente enquanto voce digita.</p>
+        </header>
+
+        <form>
+          <div class="field">
+            <label for="filamento">Metro de filamento</label>
+            <div class="input-wrap">
+              <span class="prefix">m</span>
+              <input id="filamento" type="number" inputmode="decimal" min="0" step="0.01" placeholder="12.50" />
+            </div>
+            <p class="hint">Exemplo: uma peca com 12,5 metros de filamento.</p>
+          </div>
+
+          <div class="field">
+            <label for="horas">Quantidade de horas</label>
+            <div class="input-wrap">
+              <span class="prefix">h</span>
+              <input id="horas" type="number" inputmode="decimal" min="0" step="0.01" placeholder="4.80" />
+            </div>
+            <p class="hint">Voce pode usar casas decimais, como 4,8 horas.</p>
+          </div>
+        </form>
+
+        <section class="summary" aria-live="polite">
+          <div class="result">
+            <div class="result-label">
+              <span class="chip filament"></span>
+              <span>Gasto de filamento</span>
+            </div>
+            <strong id="gastoFilamento">R$ 0,00</strong>
+          </div>
+
+          <div class="result">
+            <div class="result-label">
+              <span class="chip energy"></span>
+              <span>Gasto de energia</span>
+            </div>
+            <strong id="gastoEnergia">R$ 0,00</strong>
+          </div>
+
+          <div class="total">
+            <div>
+              <strong>Total</strong>
+              <span>Filamento + energia</span>
+            </div>
+            <strong id="total">R$ 0,00</strong>
+          </div>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const precoPorMetro = 0.15;
+    const precoPorHora = 0.60;
+
+    const filamentoInput = document.getElementById("filamento");
+    const horasInput = document.getElementById("horas");
+    const gastoFilamento = document.getElementById("gastoFilamento");
+    const gastoEnergia = document.getElementById("gastoEnergia");
+    const total = document.getElementById("total");
+
+    const formatarMoeda = (valor) =>
+      valor.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      });
+
+    const normalizarNumero = (valor) => Number(String(valor).replace(",", ".")) || 0;
+
+    function calcular() {
+      const metros = normalizarNumero(filamentoInput.value);
+      const horas = normalizarNumero(horasInput.value);
+
+      const custoFilamento = metros * precoPorMetro;
+      const custoEnergia = horas * precoPorHora;
+      const custoTotal = custoFilamento + custoEnergia;
+
+      gastoFilamento.textContent = formatarMoeda(custoFilamento);
+      gastoEnergia.textContent = formatarMoeda(custoEnergia);
+      total.textContent = formatarMoeda(custoTotal);
+    }
+
+    ["input", "change"].forEach((evento) => {
+      filamentoInput.addEventListener(evento, calcular);
+      horasInput.addEventListener(evento, calcular);
+    });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("{{ url_for('static', filename='sw.js') }}");
+      });
+    }
+  </script>
+</body>
+</html>
