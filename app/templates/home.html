@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#f4efe6" />
-  <meta name="description" content="PWA minimalista para calcular custo de filamento e energia na impressao 3D." />
+  <meta name="description" content="Minimalist PWA to calculate filament and energy costs for 3D printing." />
   <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}" />
   <link rel="icon" href="{{ url_for('static', filename='icons/icon-192.svg') }}" type="image/svg+xml" />
-  <title>Calculadora 3D</title>
+  <title>3D Cost Calculator</title>
 
   <style>
     :root {
@@ -386,49 +386,49 @@
     <section class="layout">
       <article class="hero">
         <div>
-          <span class="eyebrow">PWA de custo de impressao 3D</span>
-          <h1>Veja o custo antes da maquina aquecer.</h1>
+          <span class="eyebrow">3D printing cost PWA</span>
+          <h1>See the cost before the machine heats up.</h1>
           <p class="lead">
-            Informe quantos metros de filamento a peca usa e quantas horas a impressao leva.
-            A tela calcula na hora o gasto de material, energia e o total.
+            Enter how many meters of filament the part uses and how many hours the print takes.
+            The screen instantly calculates material cost, energy cost, and the total.
           </p>
         </div>
 
         <div class="insights">
           <div class="insight">
-            <strong>Filamento</strong>
-            <span>Calculo baseado no custo por metro configurado na propria pagina.</span>
+            <strong>Filament</strong>
+            <span>Calculation based on the cost per meter configured on the page itself.</span>
           </div>
           <div class="insight">
-            <strong>Energia</strong>
-            <span>Horas de impressao convertidas em custo para facilitar a precificacao.</span>
+            <strong>Energy</strong>
+            <span>Printing hours converted into cost to make pricing easier.</span>
           </div>
         </div>
       </article>
 
-      <section class="calculator" aria-label="Calculadora de custo">
+      <section class="calculator" aria-label="Cost calculator">
         <header class="panel-head">
-          <h2>Simular impressao</h2>
-          <p>Os resultados aparecem automaticamente enquanto voce digita.</p>
+          <h2>Print simulation</h2>
+          <p>Results appear automatically while you type.</p>
         </header>
 
         <form>
           <div class="field">
-            <label for="filamento">Metro de filamento</label>
+            <label for="filamento">Filament length</label>
             <div class="input-wrap">
               <span class="prefix">m</span>
               <input id="filamento" type="number" inputmode="decimal" min="0" step="0.01" placeholder="12.50" />
             </div>
-            <p class="hint">Exemplo: uma peca com 12,5 metros de filamento.</p>
+            <p class="hint">Example: a part using 12.5 meters of filament.</p>
           </div>
 
           <div class="field">
-            <label for="horas">Quantidade de horas</label>
+            <label for="horas">Printing time</label>
             <div class="input-wrap">
               <span class="prefix">h</span>
               <input id="horas" type="number" inputmode="decimal" min="0" step="0.01" placeholder="4.80" />
             </div>
-            <p class="hint">Voce pode usar casas decimais, como 4,8 horas.</p>
+            <p class="hint">You can use decimals, such as 4.8 hours.</p>
           </div>
         </form>
 
@@ -436,7 +436,7 @@
           <div class="result">
             <div class="result-label">
               <span class="chip filament"></span>
-              <span>Gasto de filamento</span>
+              <span>Filament cost</span>
             </div>
             <strong id="gastoFilamento">R$ 0,00</strong>
           </div>
@@ -444,7 +444,7 @@
           <div class="result">
             <div class="result-label">
               <span class="chip energy"></span>
-              <span>Gasto de energia</span>
+              <span>Energy cost</span>
             </div>
             <strong id="gastoEnergia">R$ 0,00</strong>
           </div>
@@ -452,7 +452,7 @@
           <div class="total">
             <div>
               <strong>Total</strong>
-              <span>Filamento + energia</span>
+              <span>Filament + energy</span>
             </div>
             <strong id="total">R$ 0,00</strong>
           </div>
