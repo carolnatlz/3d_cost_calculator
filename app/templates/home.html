@@ -78,7 +78,7 @@
     .shell {
       position: relative;
       z-index: 1;
-      width: min(100%, 960px);
+      width: min(100%, 460px);
       background: var(--surface);
       backdrop-filter: blur(18px);
       border: 1px solid rgba(255, 255, 255, 0.55);
@@ -96,25 +96,17 @@
     }
 
     .layout {
-      display: grid;
-      grid-template-columns: 1.08fr 0.92fr;
-      min-height: 640px;
+      min-height: 100vh;
     }
 
-    .hero,
     .calculator {
-      padding: 36px;
-    }
-
-    .hero {
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.08)),
-        linear-gradient(150deg, rgba(255, 231, 196, 0.75), rgba(255, 255, 255, 0));
-      border-right: 1px solid var(--line);
+      padding: 28px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      gap: 28px;
+      gap: 22px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.08)),
+        linear-gradient(150deg, rgba(255, 231, 196, 0.48), rgba(255, 255, 255, 0));
     }
 
     .eyebrow {
@@ -122,12 +114,12 @@
       align-items: center;
       gap: 10px;
       width: fit-content;
-      padding: 9px 14px;
+      padding: 8px 12px;
       border-radius: 999px;
       background: rgba(255, 253, 248, 0.85);
       border: 1px solid rgba(217, 119, 6, 0.16);
       color: var(--muted);
-      font-size: 0.85rem;
+      font-size: 0.78rem;
       letter-spacing: 0.04em;
       text-transform: uppercase;
     }
@@ -141,90 +133,110 @@
       box-shadow: 0 0 0 6px rgba(217, 119, 6, 0.12);
     }
 
-    h1 {
-      margin: 18px 0 14px;
-      font-size: clamp(2.3rem, 4vw, 4rem);
-      line-height: 0.96;
-      letter-spacing: -0.05em;
-    }
-
-    .lead {
-      margin: 0;
-      max-width: 30ch;
-      color: var(--muted);
-      font-size: 1rem;
-      line-height: 1.7;
-    }
-
-    .insights {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .insight {
-      padding: 18px;
-      border-radius: var(--radius-lg);
-      background: rgba(255, 253, 249, 0.72);
-      border: 1px solid rgba(64, 52, 42, 0.08);
-      transform: translateY(18px);
-      opacity: 0;
-      animation: rise 700ms var(--transition) forwards;
-    }
-
-    .insight:nth-child(2) {
-      animation-delay: 120ms;
-    }
-
-    .insight strong {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 1.1rem;
-    }
-
-    .insight span {
-      color: var(--muted);
-      font-size: 0.94rem;
-      line-height: 1.5;
-    }
-
-    .calculator {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 24px;
-      background: rgba(255, 255, 255, 0.28);
-    }
-
     .panel-head h2 {
-      margin: 0 0 8px;
-      font-size: 1.5rem;
+      margin: 12px 0 0;
+      font-size: 1.35rem;
+      letter-spacing: -0.04em;
     }
 
-    .panel-head p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.6;
+    .panel-head {
+      display: grid;
+      gap: 10px;
     }
 
     form {
       display: grid;
-      gap: 18px;
+      gap: 14px;
     }
 
     .field {
       display: grid;
-      gap: 8px;
+      gap: 6px;
     }
 
     label {
-      font-size: 0.94rem;
+      font-size: 0.86rem;
       color: var(--muted);
       font-weight: 600;
     }
 
+    .label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .formula-toggle {
+      width: 28px;
+      height: 28px;
+      border: 1px solid rgba(64, 52, 42, 0.08);
+      border-radius: 999px;
+      background: rgba(255, 253, 248, 0.86);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    }
+
+    .formula-toggle:hover,
+    .formula-toggle:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(217, 119, 6, 0.24);
+      box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.1);
+      outline: none;
+    }
+
+    .formula-card {
+      display: none;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255, 252, 246, 0.9);
+      border: 1px solid rgba(64, 52, 42, 0.08);
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.55;
+    }
+
+    .formula-card.open {
+      display: block;
+    }
+
+    .formula-card strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--ink);
+      font-size: 0.9rem;
+    }
+
+    .formula-card code {
+      display: block;
+      margin-top: 6px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255, 248, 237, 0.95);
+      color: var(--ink);
+      font-size: 0.82rem;
+      word-break: break-word;
+    }
+
     .input-wrap {
       position: relative;
+    }
+
+    .input-wrap.select-wrap::after {
+      content: "";
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid rgba(30, 27, 24, 0.42);
+      border-bottom: 2px solid rgba(30, 27, 24, 0.42);
+      transform: translateY(-70%) rotate(45deg);
+      pointer-events: none;
     }
 
     .prefix {
@@ -237,7 +249,8 @@
       pointer-events: none;
     }
 
-    input {
+    input,
+    select {
       width: 100%;
       border: 1px solid transparent;
       border-radius: var(--radius-md);
@@ -249,17 +262,52 @@
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
     }
 
-    input:focus {
+    select {
+      appearance: none;
+      padding-right: 44px;
+    }
+
+    input:focus,
+    select:focus {
       outline: none;
       border-color: rgba(217, 119, 6, 0.42);
       box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.12);
       transform: translateY(-1px);
     }
 
-    .hint {
-      margin: -2px 0 0;
-      color: rgba(110, 101, 92, 0.92);
-      font-size: 0.85rem;
+    input:disabled,
+    select:disabled {
+      color: rgba(30, 27, 24, 0.45);
+      background: rgba(255, 253, 248, 0.7);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 2px 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      user-select: none;
+    }
+
+    .toggle-row input {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      padding: 0;
+      accent-color: var(--accent);
+      box-shadow: none;
+      transform: none;
+    }
+
+    .toggle-row label {
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-weight: 500;
+      cursor: pointer;
     }
 
     .summary {
@@ -341,41 +389,22 @@
       font-size: clamp(1.55rem, 3vw, 2rem);
     }
 
-    @keyframes rise {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @media (max-width: 860px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
-
-      .hero {
-        border-right: 0;
-        border-bottom: 1px solid var(--line);
-      }
-    }
-
     @media (max-width: 580px) {
       body {
-        padding: 14px;
+        padding: 10px;
       }
 
-      .hero,
       .calculator {
-        padding: 24px;
-      }
-
-      .insights {
-        grid-template-columns: 1fr;
+        padding: 22px 18px 20px;
       }
 
       .summary,
       .total {
         border-radius: 18px;
+      }
+
+      .shell {
+        border-radius: 24px;
       }
     }
   </style>
@@ -384,32 +413,10 @@
 <body>
   <main class="shell">
     <section class="layout">
-      <article class="hero">
-        <div>
-          <span class="eyebrow">3D printing cost PWA</span>
-          <h1>See the cost before the machine heats up.</h1>
-          <p class="lead">
-            Enter how many meters of filament the part uses and how many hours the print takes.
-            The screen instantly calculates material cost, energy cost, and the total.
-          </p>
-        </div>
-
-        <div class="insights">
-          <div class="insight">
-            <strong>Filament</strong>
-            <span>Calculation based on the cost per meter configured on the page itself.</span>
-          </div>
-          <div class="insight">
-            <strong>Energy</strong>
-            <span>Printing hours converted into cost to make pricing easier.</span>
-          </div>
-        </div>
-      </article>
-
       <section class="calculator" aria-label="Cost calculator">
         <header class="panel-head">
+          <span class="eyebrow">3D Cost Calculator</span>
           <h2>Print simulation</h2>
-          <p>Results appear automatically while you type.</p>
         </header>
 
         <form>
@@ -417,18 +424,59 @@
             <label for="filamento">Filament length</label>
             <div class="input-wrap">
               <span class="prefix">m</span>
-              <input id="filamento" type="number" inputmode="decimal" min="0" step="0.01" placeholder="12.50" />
+              <input id="filamento" type="text" inputmode="decimal" autocomplete="off" placeholder="12,50" />
             </div>
-            <p class="hint">Example: a part using 12.5 meters of filament.</p>
           </div>
 
           <div class="field">
-            <label for="horas">Printing time</label>
+            <label for="tipoFilamento">Filament</label>
+            <div class="input-wrap select-wrap">
+              <span class="prefix">#</span>
+              <select id="tipoFilamento">
+                <option value="black-tpu">Black TPU</option>
+                <option value="black-velvet-pla">Black Velvet PLA</option>
+                <option value="dual-color-pla">Dual Color PLA</option>
+                <option value="granito-pla">Granito PLA</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="toggle-row">
+            <input id="manualPrice" type="checkbox" />
+            <label for="manualPrice">Input price manually</label>
+          </div>
+
+          <div class="field">
+            <label for="valorFilamento">Spool price</label>
+            <div class="input-wrap">
+              <span class="prefix">$</span>
+              <input id="valorFilamento" type="text" inputmode="decimal" autocomplete="off" placeholder="149,90" />
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="label-row">
+              <label for="horas">Printing time</label>
+              <button
+                id="formulaToggle"
+                class="formula-toggle"
+                type="button"
+                aria-expanded="false"
+                aria-controls="formulaCard"
+                title="Show formula"
+              >🧮</button>
+            </div>
+            <div id="formulaCard" class="formula-card" aria-hidden="true">
+              <strong>Energy formula</strong>
+              Power: 0.35 kWh
+              <br />
+              Price: R$ 1,20 per kWh
+              <code>energy cost = hours × 0.35 × 1.20</code>
+            </div>
             <div class="input-wrap">
               <span class="prefix">h</span>
-              <input id="horas" type="number" inputmode="decimal" min="0" step="0.01" placeholder="4.80" />
+              <input id="horas" type="text" inputmode="decimal" autocomplete="off" placeholder="4,80" />
             </div>
-            <p class="hint">You can use decimals, such as 4.8 hours.</p>
           </div>
         </form>
 
@@ -462,11 +510,22 @@
   </main>
 
   <script>
-    const precoPorMetro = 0.15;
-    const precoPorHora = 0.60;
+    const potenciaImpressora = 0.35;
+    const precoPorKwh = 1.2;
+    const filamentos = {
+      "black-tpu": { nome: "Black TPU", preco: 149.90, metros: 360 },
+      "black-velvet-pla": { nome: "Black Velvet PLA", preco: 105.44, metros: 333 },
+      "dual-color-pla": { nome: "Dual Color PLA", preco: 132, metros: 333 },
+      "granito-pla": { nome: "Granito PLA", preco: 122, metros: 333 }
+    };
 
     const filamentoInput = document.getElementById("filamento");
+    const tipoFilamentoInput = document.getElementById("tipoFilamento");
+    const manualPriceInput = document.getElementById("manualPrice");
+    const valorFilamentoInput = document.getElementById("valorFilamento");
     const horasInput = document.getElementById("horas");
+    const formulaToggle = document.getElementById("formulaToggle");
+    const formulaCard = document.getElementById("formulaCard");
     const gastoFilamento = document.getElementById("gastoFilamento");
     const gastoEnergia = document.getElementById("gastoEnergia");
     const total = document.getElementById("total");
@@ -477,14 +536,65 @@
         currency: "BRL"
       });
 
-    const normalizarNumero = (valor) => Number(String(valor).replace(",", ".")) || 0;
+    const inputsNumericos = [filamentoInput, valorFilamentoInput, horasInput];
+
+    const formatarEntrada = (valor) =>
+      valor.toLocaleString("pt-BR", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      });
+
+    const normalizarNumero = (valor) => {
+      const texto = String(valor).trim().replace(/\s+/g, "").replace(",", ".");
+      return Number(texto) || 0;
+    };
+
+    function permitirVirgula(input) {
+      input.addEventListener("input", () => {
+        const limpo = input.value.replace(/[^0-9,.\s]/g, "").replace(/\s+/g, "");
+        const separador = limpo.match(/[.,]/);
+
+        if (!separador) {
+          input.value = limpo;
+          return;
+        }
+
+        const indice = separador.index;
+        const inteiro = limpo.slice(0, indice).replace(/[.,]/g, "");
+        const decimal = limpo.slice(indice + 1).replace(/[.,]/g, "");
+
+        input.value = `${inteiro}${separador[0]}${decimal}`;
+      });
+    }
+
+    function obterFilamentoSelecionado() {
+      return filamentos[tipoFilamentoInput.value] || filamentos["black-tpu"];
+    }
+
+    function sincronizarModoPreco() {
+      const manual = manualPriceInput.checked;
+      const filamentoSelecionado = obterFilamentoSelecionado();
+
+      tipoFilamentoInput.disabled = manual;
+      valorFilamentoInput.disabled = !manual;
+
+      if (!manual) {
+        valorFilamentoInput.value = formatarEntrada(filamentoSelecionado.preco);
+      } else if (!valorFilamentoInput.value) {
+        valorFilamentoInput.value = formatarEntrada(filamentoSelecionado.preco);
+      }
+    }
 
     function calcular() {
       const metros = normalizarNumero(filamentoInput.value);
+      const manual = manualPriceInput.checked;
+      const filamentoSelecionado = obterFilamentoSelecionado();
+      const precoRolo = manual ? normalizarNumero(valorFilamentoInput.value) : filamentoSelecionado.preco;
+      const metrosPorRolo = manual ? 360 : filamentoSelecionado.metros;
       const horas = normalizarNumero(horasInput.value);
 
-      const custoFilamento = metros * precoPorMetro;
-      const custoEnergia = horas * precoPorHora;
+      const custoFilamento = metrosPorRolo > 0 ? (metros * precoRolo) / metrosPorRolo : 0;
+      const custoEnergia = horas * potenciaImpressora * precoPorKwh;
       const custoTotal = custoFilamento + custoEnergia;
 
       gastoFilamento.textContent = formatarMoeda(custoFilamento);
@@ -492,10 +602,32 @@
       total.textContent = formatarMoeda(custoTotal);
     }
 
-    ["input", "change"].forEach((evento) => {
-      filamentoInput.addEventListener(evento, calcular);
-      horasInput.addEventListener(evento, calcular);
+    inputsNumericos.forEach((input) => {
+      permitirVirgula(input);
+      ["input", "change"].forEach((evento) => {
+        input.addEventListener(evento, calcular);
+      });
     });
+
+    tipoFilamentoInput.addEventListener("change", () => {
+      sincronizarModoPreco();
+      calcular();
+    });
+
+    manualPriceInput.addEventListener("change", () => {
+      sincronizarModoPreco();
+      calcular();
+    });
+
+    formulaToggle.addEventListener("click", () => {
+      const aberto = formulaCard.classList.toggle("open");
+      formulaToggle.setAttribute("aria-expanded", String(aberto));
+      formulaCard.setAttribute("aria-hidden", String(!aberto));
+    });
+
+    tipoFilamentoInput.value = "black-tpu";
+    sincronizarModoPreco();
+    calcular();
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
